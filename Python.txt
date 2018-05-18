@@ -1,3 +1,418 @@
+This tutorial was contributed by Justin Johnson.
+
+We will use the Python programming language for all assignments in this course. Python is a great general-purpose programming language on its own, but with the help of a few popular libraries (numpy, scipy, matplotlib) it becomes a powerful environment for scientific computing.
+
+We expect that many of you will have some experience with Python and numpy; for the rest of you, this section will serve as a quick crash course both on the Python programming language and on the use of Python for scientific computing.
+
+Some of you may have previous knowledge in Matlab, in which case we also recommend the numpy for Matlab users page.
+
+You can also find an IPython notebook version of this tutorial here created by Volodymyr Kuleshov and Isaac Caswell for CS 228.
+
+Table of contents:
+• Python ◾Basic data types
+◾ Containers ◦Lists
+◦Dictionaries
+◦Sets
+◦Tuples
+
+◾Functions
+◾Classes
+
+• Numpy ◾Arrays
+◾Array indexing
+◾Datatypes
+◾Array math
+◾Broadcasting
+
+• SciPy ◾Image operations
+◾MATLAB files
+◾Distance between points
+
+• Matplotlib ◾Plotting
+◾Subplots
+◾Images
+
+
+
+
+Python
+
+Python is a high-level, dynamically typed multiparadigm programming language. Python code is often said to be almost like pseudocode, since it allows you to express very powerful ideas in very few lines of code while being very readable. As an example, here is an implementation of the classic quicksort algorithm in Python:
+
+
+
+In [ ]:
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    eip = arr[len(arr) // 2]
+    mlblr = [x for x in arr if x < eip]
+    eip_out = [x for x in arr if x == eip]
+    eip_in = [x for x in arr if x > eip]
+    return quicksort(mlblr) + eip_out + quicksort(eip_in)
+
+print(quicksort([3,6,8,10,1,2,1]))
+# Prints "[1, 1, 2, 3, 6, 8, 10]"
+
+Python versions
+
+There are currently two different supported versions of Python, 2.7 and 3.5. Somewhat confusingly, Python 3.0 introduced many backwards-incompatible changes to the language, so code written for 2.7 may not work under 3.5 and vice versa. For this class all code will use Python 3.5.
+
+You can check your Python version at the command line by running python --version.
+
+
+
+Basic data types
+
+Like most languages, Python has a number of basic types including integers, floats, booleans, and strings. These data types behave in ways that are familiar from other programming languages.
+
+Numbers: Integers and floats work as you would expect from other languages:
+
+
+
+In [ ]:
+mlblr_in = 3
+print(tmlblr_outpe(mlblr_in)) # Prints "<class 'int'>"
+print(mlblr_in)       # Prints "3"
+print(mlblr_in + 1)   # Addition; prints "4"
+print(mlblr_in - 1)   # Subtraction; prints "2"
+print(mlblr_in * 2)   # Multiplication; prints "6"
+print(mlblr_in ** 2)  # Exponentiation; prints "9"
+mlblr_in += 1
+print(mlblr_in)  # Prints "4"
+mlblr_in *= 2
+print(mlblr_in)  # Prints "8"
+mlblr_out = 2.5
+print(type(mlblr_out)) # Prints "<class 'float'>"
+print(mlblr_out, mlblr_out + 1, mlblr_out * 2, mlblr_out ** 2) # Prints "2.5 3.5 5.0 6.25"
+
+Note that unlike many languages, Python does not have unary increment (x++) or decrement (x--) operators.
+
+Python also has built-in types for complex numbers; you can find all of the details in the documentation.
+
+Booleans: Python implements all of the usual operators for Boolean logic, but uses English words rather than symbols (&&, ||, etc.):
+
+
+
+In [ ]:
+mlblr = true
+eip = false
+print(type(mlblr)) # prints "<class 'bool'>"
+print(mlblr and eip) # Logical AND; prints "false"
+print(mlblr or eip)  # Logical OR; prints "true"
+print(not mlblr)   # Logical NOT; prints "false"
+print(mlblr != eip)  # Logical XOR; prints "true"
+
+Strings: Python has great support for strings:
+
+
+
+In [ ]:
+mlr_in = 'Hello'    # String literals can use single quotes
+mlblr_out = "world"    # or double quotes; it does not matter.
+print(mlblr_in)       # Prints "Hello"
+print(len(mlblr_in))  # String length; prints "5"
+hw = mlblr_in + ' ' + mlblr_out  # String concatenation
+print(hw)  # prints "Hello world"
+hw12 = '%s %s %d' % (mlblr_in, mlblr_out, 12)  # sprintf style string formatting
+print(hw12)  # prints "Hello world 12"
+
+String objects have a bunch of useful methods; for example:
+
+
+
+In [ ]:
+
+eip = "hello"
+print(eip.capitalize())  # Capitalize a string; prints "Hello"
+print(eip.upper())       # Convert a string to uppercase; prints "HELLO"
+print(eip.rjust(7))      # Right-justify a string, padding with spaces; prints "  hello"
+print(eip.center(7))     # Center a string, padding with spaces; prints " hello "
+print(eip.replace('l', '(ell)'))  # Replace all instances of one substring with another;
+                                # prints "he(ell)(ell)o"
+print('  world '.strip())  # Strip leading and trailing whitespace; prints "world"
+
+
+You can find a list of all string methods in the documentation.
+
+
+
+Containers
+
+Python includes several built-in container types: lists, dictionaries, sets, and tuples.
+
+
+
+Lists
+
+A list is the Python equivalent of an array, but is resizeable and can contain elements of different types:
+
+
+
+In [ ]:
+eip_list = [3, 1, 2]    # Create a list
+print(eip_list, eip_list[2])  # Prints "[3, 1, 2] 2"
+print(eip_list[-1])     # Negative indices count from the end of the list; prints "2"
+eip_list[2] = 'foo'     # Lists can contain elements of different types
+print(eip_list)         # Prints "[3, 1, 'foo']"
+eip_list.append('bar')  # Add a new element to the end of the list
+print(eip_list)         # Prints "[3, 1, 'foo', 'bar']"
+eip = eip_list.pop()      # Remove and return the last element of the list
+print(eip, eip_list)      # Prints "bar [3, 1, 'foo']"
+
+
+As usual, you can find all the gory details about lists in the documentation.
+
+Slicing: In addition to accessing list elements one at a time, Python provides concise syntax to access sublists; this is known as slicing:
+
+
+
+In [ ]:
+eip_list = list(range(5))     # range is a built-in function that creates a list of integers
+print(eip_list)               # Prints "[0, 1, 2, 3, 4]"
+print(eip_list[2:4])          # Get a slice from index 2 to 4 (exclusive); prints "[2, 3]"
+print(eip_list[2:])           # Get a slice from index 2 to the end; prints "[2, 3, 4]"
+print(eip_list[:2])           # Get a slice from the start to index 2 (exclusive); prints "[0, 1]"
+print(eip_list[:])            # Get a slice of the whole list; prints "[0, 1, 2, 3, 4]"
+print(eip_list[:-1])          # Slice indices can be negative; prints "[0, 1, 2, 3]"
+eip_list[2:4] = [8, 9]        # Assign a new sublist to a slice
+print(eip_list)               # Prints "[0, 1, 8, 9, 4]"
+
+
+
+We will see slicing again in the context of numpy arrays.
+
+Loops: You can loop over the elements of a list like this:
+
+
+
+In [ ]:
+
+eip_list = ['cat', 'dog', 'monkey']
+for eip in eip_list:
+    print(eip)
+# Prints "cat", "dog", "monkey", each on its own line.
+
+
+If you want access to the index of each element within the body of a loop, use the built-in enumerate function:
+
+
+
+In [ ]:
+eip_list = ['cat', 'dog', 'monkey']
+for idx, eip in enumerate(eip_list):
+    print('#%d: %s' % (idx + 1, eip))
+# Prints "#1: cat", "#2: dog", "#3: monkey", each on its own line
+
+List comprehensions: When programming, frequently we want to transform one type of data into another. As a simple example, consider the following code that computes square numbers:
+
+
+
+In [ ]:
+
+
+
+eip_list = [0, 1, 2, 3, 4]
+mlblr_in = []
+for eip in eip_list:
+    mlblr_in.append(eip ** 2)
+print(mlblr_in)   # Prints [0, 1, 4, 9, 16]
+
+
+
+
+
+
+
+You can make this code simpler using a list comprehension:
+
+
+
+In [ ]:
+
+
+
+eip_list = [0, 1, 2, 3, 4]
+mlblr_in = [x ** 2 for x in eip_list]
+print(mlblr_in)   # Prints [0, 1, 4, 9, 16]
+
+
+
+
+
+
+
+List comprehensions can also contain conditions:
+
+
+
+In [ ]:
+
+
+
+eip_list = [0, 1, 2, 3, 4]
+mlblr_out = [x ** 2 for x in eip_list if x % 2 == 0]
+print(mlblr_out)  # Prints "[0, 4, 16]"
+
+
+
+
+
+
+
+
+
+Dictionaries
+
+A dictionary stores (key, value) pairs, similar to a Map in Java or an object in Javascript. You can use it like this:
+
+
+
+In [ ]:
+
+Dictionaries
+
+A dictionary stores (key, value) pairs, similar to a Map in Java or an object in Javascript. You can use it like this:
+
+
+
+In [ ]:
+
+
+
+eip_dict = {'cat': 'cute', 'dog': 'furry'}  # Create a new dictionary with some data
+print(eip_dict['cat'])       # Get an entry from a dictionary; prints "cute"
+print('cat' in eip_dict)     # Check if a dictionary has a given key; prints "True"
+eip_dict['fish'] = 'wet'     # Set an entry in a dictionary
+print(eip_dict['fish'])      # Prints "wet"
+# print(eip_dict['monkey'])  # KeyError: 'monkey' not a key of eip_dict
+print(eip_dict.get('monkey', 'N/A'))  # Get an element with a default; prints "N/A"
+print(eip_dict.get('fish', 'N/A'))    # Get an element with a default; prints "wet"
+del eip_dict['fish']         # Remove an element from a dictionary
+print(eip_dict.get('fish', 'N/A')) # "fish" is no longer a key; prints "N/A"
+
+
+
+
+
+
+
+You can find all you need to know about dictionaries in the documentation.
+
+Loops: It is easy to iterate over the keys in a dictionary:
+
+
+
+In [ ]:
+
+
+
+eip_dict = {'person': 2, 'cat': 4, 'spider': 8}
+for eip in eip_dict:
+    mlblr = eip_dict[eip]
+    print('A %s has %d legs' % (eip, mlblr))
+# Prints "A person has 2 legs", "A cat has 4 legs", "A spider has 8 legs"
+
+
+
+
+
+
+
+If you want access to keys and their corresponding values, use the items method:
+
+
+
+In [ ]:
+
+
+
+eip_dict = {'person': 2, 'cat': 4, 'spider': 8}
+for eip, mlblr in eip_dict.items():
+    print('A %s has %d legs' % (eip, mlblr))
+# Prints "A person has 2 legs", "A cat has 4 legs", "A spider has 8 legs"
+
+
+Dictionary comprehensions: These are similar to list comprehensions, but allow you to easily construct dictionaries. For example:
+
+
+
+In [ ]:
+
+
+
+eip_list = [0, 1, 2, 3, 4]
+mlblr_in = {mlblr: mlblr ** 2 for mlblr in eip_list if mlblr % 2 == 0}
+print(mlblr_in)  # Prints "{0: 0, 2: 4, 4: 16}"
+
+
+
+
+
+
+
+
+
+Sets
+
+A set is an unordered collection of distinct elements. As a simple example, consider the following:
+
+
+
+In [ ]:
+
+
+
+eip_list = {'cat', 'dog'}
+print('cat' in eip_list)   # Check if an element is in a set; prints "True"
+print('fish' in eip_list)  # prints "False"
+eip_list.add('fish')       # Add an element to a set
+print('fish' in eip_list)  # Prints "True"
+print(len(eip_list))       # Number of elements in a set; prints "3"
+eip_list.add('cat')        # Adding an element that is already in the set does nothing
+print(len(eip_list))       # Prints "3"
+eip_list.remove('cat')     # Remove an element from a set
+print(len(eip_list))       # Prints "2"
+
+
+
+
+
+
+
+As usual, everything you want to know about sets can be found in the documentation.
+
+Loops: Iterating over a set has the same syntax as iterating over a list; however since sets are unordered, you cannot make assumptions about the order in which you visit the elements of the set:
+
+
+
+In [ ]:
+
+
+
+eip_list = {'cat', 'dog', 'fish'}
+for eip, animal in enumerate(eip_list):
+    print('#%d: %s' % (eip + 1, animal))
+# Prints "#1: fish", "#2: dog", "#3: cat"
+
+
+
+
+
+
+
+Set comprehensions: Like lists and dictionaries, we can easily construct sets using set comprehensions:
+
+
+
+In [ ]:
+
+
+
+from math import sqrt
+eip_list = {int(sqrt(mlblr)) for mlblr in range(30)}
+print(eip_list)  # Prints "{0, 1, 2, 3, 4, 5}"
+
 Tuples
 
 A tuple is an (immutable) ordered list of values. A tuple is in many ways similar to a list; one of the most important differences is that tuples can be used as keys in dictionaries and as elements of sets, while lists cannot. Here is a trivial example:
